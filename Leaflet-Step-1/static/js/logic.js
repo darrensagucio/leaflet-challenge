@@ -51,7 +51,26 @@ function createMap(earthquakes) {
     zoom: 5, 
     layers: [lightmap, earthquakes]
   });
+  
+  var legend = L.control({position: 'bottomright'});
+  var colorArray = ["#FFEDA0","green","yellow","red","orange","purple"];
 
+  legend.onAdd = function (map) {
+
+    var div = L.DomUtil.create('div', 'info legend'),
+      grades = [-10, 10, 30, 50, 70, 90];
+      labels = [];
+
+    for (var i = 0; i < grades.length; i++) {
+      div.innerHTML +=
+        '<li style="background-color:' + colorArray[i] + '"></li> ' +
+        grades[i] + (grades[i + 1] ? '&ndash;' + grades[i + 1] + '<br>' : '+');
+    }
+
+    return div;
+  };
+
+  legend.addTo(myMap);
 }
 
 
@@ -59,15 +78,38 @@ function createCircleMarkers(response) {
 
   var earthquakeArray = []; 
 
-  
   for (var i = 0; i < response.features.length; i++) {
     
+    var color = "";
+    
+    if (response.features[i].geometry.coordinates[2] > 90) {
+      color = "blue";
+    }
+    else if (response.features[i].geometry.coordinates[2] >=70 && response.features[i].geometry.coordinates[2] <=90) {
+      color = "green";
+    }
+    else if (response.features[i].geometry.coordinates[2] >=50 && response.features[i].geometry.coordinates[2] <=70) {
+      color = "yellow";
+    }
+    else if (response.features[i].geometry.coordinates[2] >=30 && response.features[i].geometry.coordinates[2] <=50) {
+      color = "red";
+    }
+    else if (response.features[i].geometry.coordinates[2] >=10 && response.features[i].geometry.coordinates[2] <=30) {
+      color = "orange";
+    }
+    else if (response.features[i].geometry.coordinates[2] >=-10 && response.features[i].geometry.coordinates[2] <=10) {
+      color = "purple";
+    }
+    else {
+      color = "pink";
+    }
+
+
     var eqCircleMarker = L.circleMarker([response.features[i].geometry.coordinates[1],response.features[i].geometry.coordinates[0]], {
       fillOpacity: 0.75,
       weight: 0.50, 
-      // stroke: false,
       color: "black",
-      fillColor: "green",
+      fillColor: color,
       // Adjust radius
       radius: response.features[i].properties.mag * 4})
       .bindPopup("<h3> Location: " + response.features[i].properties.place + "</h3> <hr> <h3> Magnitude: " + response.features[i].properties.mag + "</h3> <h3> Depth Level: " + response.features[i].geometry.coordinates[2] + "</h3> ");
@@ -85,3 +127,8 @@ function createCircleMarkers(response) {
   
   createMap(L.layerGroup(earthquakeArray));
 }
+
+
+// '<i style="background:' + colorArray[i] + '"></i> '
+
+// "<li style=\"background-color: " + colorArray[i] + "\"></li>"
