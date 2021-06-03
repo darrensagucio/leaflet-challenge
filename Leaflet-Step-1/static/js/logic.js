@@ -1,42 +1,6 @@
-// var myMap = L.map("map", {
-//     center: [39.0522, -118.2437],
-//     zoom: 5
-// });
-
-// L.tileLayer("https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}", {
-//   attribution: "© <a href='https://www.mapbox.com/about/maps/'>Mapbox</a> © <a href='http://www.openstreetmap.org/copyright'>OpenStreetMap</a> <strong><a href='https://www.mapbox.com/map-feedback/' target='_blank'>Improve this map</a></strong>",
-//   tileSize: 512,
-//   maxZoom: 18,
-//   zoomOffset: -1,
-//   id: "mapbox/streets-v11",
-//   // id: "light-v10",
-//   accessToken: API_KEY
-// }).addTo(myMap);
-
-console.log("hi");
-
-// L.tileLayer("https://api.mapbox.com/styles/v1/mapbox/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}", {
-//   attribution: "Map data &copy; <a href=\"https://www.openstreetmap.org/\">OpenStreetMap</a> contributors, <a href=\"https://creativecommons.org/licenses/by-sa/2.0/\">CC-BY-SA</a>, Imagery © <a href=\"https://www.mapbox.com/\">Mapbox</a>",
-//   maxZoom: 18,
-//   id: "light-v10",
-//   accessToken: API_KEY
-// }).addTo(myMap);
-
 var url = "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_week.geojson"
 
-
-// d3.json(url).then(function(data) {
-//   // Check Data
-//   console.log(data);
-//   console.log(data.features[0].geometry.coordinates[0]);
-  
-//   // Send Data To Function
-//   createCircleMarkers(data);
-// });
-
 d3.json(url).then(createCircleMarkers);
-
-
 
 function createMap(earthquakes) {
   var lightmap = L.tileLayer("https://api.mapbox.com/styles/v1/mapbox/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}", {
@@ -53,9 +17,9 @@ function createMap(earthquakes) {
   });
   
   var legend = L.control({position: 'bottomright'});
-  var colorArray = ["#FFEDA0","green","yellow","red","orange","purple"];
+  var colorArray = ["#80ffaa","#d5ff80","#ffc34d","#ff9933","#cc6600","#ff471a"];
 
-  legend.onAdd = function (map) {
+  legend.onAdd = function () {
 
     var div = L.DomUtil.create('div', 'info legend'),
       grades = [-10, 10, 30, 50, 70, 90];
@@ -63,7 +27,7 @@ function createMap(earthquakes) {
 
     for (var i = 0; i < grades.length; i++) {
       div.innerHTML +=
-        '<li style="background-color:' + colorArray[i] + '"></li> ' +
+        '<i style="background:' + colorArray[i] + '"></i> ' +
         grades[i] + (grades[i + 1] ? '&ndash;' + grades[i + 1] + '<br>' : '+');
     }
 
@@ -83,22 +47,22 @@ function createCircleMarkers(response) {
     var color = "";
     
     if (response.features[i].geometry.coordinates[2] > 90) {
-      color = "blue";
+      color = "#ff471a";
     }
     else if (response.features[i].geometry.coordinates[2] >=70 && response.features[i].geometry.coordinates[2] <=90) {
-      color = "green";
+      color = "#cc6600";
     }
     else if (response.features[i].geometry.coordinates[2] >=50 && response.features[i].geometry.coordinates[2] <=70) {
-      color = "yellow";
+      color = "#ff9933";
     }
     else if (response.features[i].geometry.coordinates[2] >=30 && response.features[i].geometry.coordinates[2] <=50) {
-      color = "red";
+      color = "#ffc34d";
     }
     else if (response.features[i].geometry.coordinates[2] >=10 && response.features[i].geometry.coordinates[2] <=30) {
-      color = "orange";
+      color = "#d5ff80";
     }
     else if (response.features[i].geometry.coordinates[2] >=-10 && response.features[i].geometry.coordinates[2] <=10) {
-      color = "purple";
+      color = "#80ffaa";
     }
     else {
       color = "pink";
@@ -118,17 +82,8 @@ function createCircleMarkers(response) {
 
   }
   
+  console.log("Welcome To Console! Here Is The Data That Was Collected!")
   console.log(response)
-  console.log(response.features[0].properties.mag)
-  console.log(response.features[0].geometry.coordinates[1])
-  console.log("hi");
-  console.log(earthquakeArray);
-  console.log(response.features.length)
   
   createMap(L.layerGroup(earthquakeArray));
 }
-
-
-// '<i style="background:' + colorArray[i] + '"></i> '
-
-// "<li style=\"background-color: " + colorArray[i] + "\"></li>"
